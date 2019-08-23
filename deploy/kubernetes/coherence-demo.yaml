@@ -11,128 +11,36 @@ spec:
   images:
     coherence:
       image: oracle/coherence:12.2.1.4.0-b74630
-  ports:
-    http: 7001
-  service:
-    externalPort: 7001
-  cacheConfig: coherence-cache-config.xml
   logging:
     configFile: logging.properties
   maxHeap: 64m
   javaOpts: "-Dcoherence.management.http=none -Dcoherence.metrics.http.enabled=false"
+  resources:
+    limits:
+      cpu: 2
+    requests:
+      cpu: 1
   roles:
     - role: carts
       images:
         userArtifacts:
           image: weavesocks/carts:1.0.0
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    coherenceCluster: weavesocks
-    coherenceDeployment: weavesocks-carts
-    coherenceRole: carts
-  name: carts
-  namespace: weavesocks
-spec:
-  ports:
-  - name: http
-    port: 80
-    protocol: TCP
-    targetPort: http
-  selector:
-    coherenceDeployment: weavesocks-carts
-    component: coherencePod
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: catalogue-db
-  labels:
-    name: catalogue-db
-  namespace: weavesocks
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: catalogue-db
-    spec:
-      containers:
-      - name: catalogue-db
-        image: weaveworksdemos/catalogue-db:0.3.0
-        env:
-          - name: MYSQL_ROOT_PASSWORD
-            value: fake_password
-          - name: MYSQL_DATABASE
-            value: socksdb
-        ports:
-        - name: mysql
-          containerPort: 3306
-      nodeSelector:
-        beta.kubernetes.io/os: linux
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: catalogue-db
-  labels:
-    name: catalogue-db
-  namespace: weavesocks
-spec:
-  ports:
-    # the port that this service should serve on
-  - port: 3306
-    targetPort: 3306
-  selector:
-    name: catalogue-db
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: catalogue
-  labels:
-    name: catalogue
-  namespace: weavesocks
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: catalogue
-    spec:
-      containers:
-      - name: catalogue
-        image: weaveworksdemos/catalogue:0.3.5
-        ports:
-        - containerPort: 80
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 10001
-          capabilities:
-            drop:
-              - all
-            add:
-              - NET_BIND_SERVICE
-          readOnlyRootFilesystem: true
-      nodeSelector:
-        beta.kubernetes.io/os: linux
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: catalogue
-  labels:
-    name: catalogue
-  namespace: weavesocks
-spec:
-  ports:
-    # the port that this service should serve on
-  - port: 80
-    targetPort: 80
-  selector:
-    name: catalogue
+      ports:
+        - name: http
+          port: 7001
+          service:
+            name: carts
+            port: 80
+    - role: catalogue
+      images:
+        userArtifacts:
+          image: weavesocks/catalogue:1.0.0
+      ports:
+        - name: http
+          port: 7001
+          service:
+            name: catalogue
+            port: 80
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
