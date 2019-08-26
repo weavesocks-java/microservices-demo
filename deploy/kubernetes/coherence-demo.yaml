@@ -39,6 +39,16 @@ spec:
           service:
             name: catalogue
             port: 80
+    - role: payment
+      images:
+        userArtifacts:
+          image: weavesocks/payment:1.0.0
+      ports:
+        - name: http
+          port: 7001
+          service:
+            name: payment
+            port: 80
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -198,52 +208,6 @@ spec:
     targetPort: 80
   selector:
     name: orders
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: payment
-  labels:
-    name: payment
-  namespace: weavesocks
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: payment
-    spec:
-      containers:
-      - name: payment
-        image: weaveworksdemos/payment:0.4.3
-        ports:
-        - containerPort: 80
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 10001
-          capabilities:
-            drop:
-              - all
-            add:
-              - NET_BIND_SERVICE
-          readOnlyRootFilesystem: true
-      nodeSelector:
-        beta.kubernetes.io/os: linux
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: payment
-  labels:
-    name: payment
-  namespace: weavesocks
-spec:
-  ports:
-    # the port that this service should serve on
-  - port: 80
-    targetPort: 80
-  selector:
-    name: payment
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
