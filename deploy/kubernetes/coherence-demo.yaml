@@ -5,15 +5,15 @@ metadata:
   name: weavesocks
 spec:
   replicas: 1
+  imagePullSecrets:
+    - coherence-k8s-operator-development-secret
+    - ocr-k8s-operator-development-secret
   readinessProbe:
     initialDelaySeconds: 10
     periodSeconds: 10
-  images:
-    coherence:
-      image: oracle/coherence:12.2.1.4.0-b74630
   logging:
     configFile: logging.properties
-  maxHeap: 64m
+  maxHeap: 256m
   javaOpts: "-Dcoherence.management.http=none -Dcoherence.metrics.http.enabled=false"
   resources:
     limits:
@@ -23,6 +23,7 @@ spec:
       images:
         userArtifacts:
           image: weavesocks/carts:1.0.0
+          imagePullPolicy: Always
       ports:
         - name: http
           port: 7001
@@ -33,6 +34,7 @@ spec:
       images:
         userArtifacts:
           image: weavesocks/catalogue:1.0.0
+          imagePullPolicy: Always
       ports:
         - name: http
           port: 7001
@@ -43,6 +45,7 @@ spec:
       images:
         userArtifacts:
           image: weavesocks/payment:1.0.0
+          imagePullPolicy: Always
       ports:
         - name: http
           port: 7001
@@ -53,6 +56,7 @@ spec:
       images:
         userArtifacts:
           image: weavesocks/shipping:1.0.0
+          imagePullPolicy: Always
       ports:
         - name: http
           port: 7001
@@ -63,6 +67,7 @@ spec:
       images:
         userArtifacts:
           image: weavesocks/orders:1.0.0
+          imagePullPolicy: Always
       ports:
         - name: http
           port: 7001
@@ -116,92 +121,6 @@ spec:
     nodePort: 30001
   selector:
     name: front-end
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: queue-master
-  labels:
-    name: queue-master
-  namespace: weavesocks
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: queue-master
-    spec:
-      containers:
-      - name: queue-master
-        image: weaveworksdemos/queue-master:0.3.1
-        ports:
-        - containerPort: 80
-      nodeSelector:
-        beta.kubernetes.io/os: linux
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: queue-master
-  labels:
-    name: queue-master
-  annotations:
-    prometheus.io/path: "/prometheus"
-  namespace: weavesocks
-spec:
-  ports:
-    # the port that this service should serve on
-  - port: 80
-    targetPort: 80
-  selector:
-    name: queue-master
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: rabbitmq
-  labels:
-    name: rabbitmq
-  namespace: weavesocks
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: rabbitmq
-    spec:
-      containers:
-      - name: rabbitmq
-        image: rabbitmq:3.6.8
-        ports:
-        - containerPort: 5672
-        securityContext:
-          capabilities:
-            drop:
-              - all
-            add:
-              - CHOWN
-              - SETGID
-              - SETUID
-              - DAC_OVERRIDE
-          readOnlyRootFilesystem: true
-      nodeSelector:
-        beta.kubernetes.io/os: linux
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: rabbitmq
-  labels:
-    name: rabbitmq
-  namespace: weavesocks
-spec:
-  ports:
-    # the port that this service should serve on
-  - port: 5672
-    targetPort: 5672
-  selector:
-    name: rabbitmq
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
