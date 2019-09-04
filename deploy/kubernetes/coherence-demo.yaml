@@ -1,13 +1,18 @@
 apiVersion: coherence.oracle.com/v1
 kind: CoherenceCluster
 metadata:
-  namespace: weavesocks
   name: weavesocks
 spec:
   replicas: 1
   imagePullSecrets:
     - coherence-k8s-operator-development-secret
     - ocr-k8s-operator-development-secret
+  images:
+    coherence:
+      image: iad.ocir.io/odx-stateservice/test/coherence:14.1.1.0.0-b74839
+    coherenceUtils:
+      image: iad.ocir.io/odx-stateservice/test/oracle/coherence-operator:2.0.0-SNAPSHOT-utils
+      imagePullPolicy: Always
   readinessProbe:
     initialDelaySeconds: 10
     periodSeconds: 10
@@ -79,7 +84,6 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: front-end
-  namespace: weavesocks
 spec:
   replicas: 1
   template:
@@ -112,13 +116,11 @@ metadata:
   name: front-end
   labels:
     name: front-end
-  namespace: weavesocks
 spec:
   type: NodePort
   ports:
   - port: 80
     targetPort: 8079
-    nodePort: 30001
   selector:
     name: front-end
 ---
@@ -128,7 +130,6 @@ metadata:
   name: user-db
   labels:
     name: user-db
-  namespace: weavesocks
 spec:
   replicas: 1
   template:
@@ -167,7 +168,6 @@ metadata:
   name: user-db
   labels:
     name: user-db
-  namespace: weavesocks
 spec:
   ports:
     # the port that this service should serve on
@@ -182,7 +182,6 @@ metadata:
   name: user
   labels:
     name: user
-  namespace: weavesocks
 spec:
   replicas: 1
   template:
@@ -216,7 +215,6 @@ metadata:
   name: user
   labels:
     name: user
-  namespace: weavesocks
 spec:
   ports:
     # the port that this service should serve on
