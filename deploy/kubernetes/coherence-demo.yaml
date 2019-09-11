@@ -49,29 +49,27 @@ spec:
     - role: payment
       images:
         userArtifacts:
-          image: weavesocks/payment:1.0.0
+          image: weavesocks/payment:2.0.0
           imagePullPolicy: Always
       ports:
-        - name: http
-          port: 7001
+        - name: grpc
+          port: 1408
           service:
             name: payment
-            port: 80
     - role: shipping
       images:
         userArtifacts:
-          image: weavesocks/shipping:1.0.0
+          image: weavesocks/shipping:2.0.0
           imagePullPolicy: Always
       ports:
-        - name: http
-          port: 7001
+        - name: grpc
+          port: 1408
           service:
             name: shipping
-            port: 80
     - role: orders
       images:
         userArtifacts:
-          image: weavesocks/orders:1.0.0
+          image: weavesocks/orders:2.0.0
           imagePullPolicy: Always
       ports:
         - name: http
