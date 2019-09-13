@@ -10,16 +10,12 @@ spec:
   images:
     coherence:
       image: iad.ocir.io/odx-stateservice/test/coherence:14.1.1.0.0-b74871
-    coherenceUtils:
-      image: iad.ocir.io/odx-stateservice/test/oracle/coherence-operator:2.0.0-SNAPSHOT-utils
-      imagePullPolicy: Always
   readinessProbe:
     initialDelaySeconds: 10
     periodSeconds: 10
   logging:
     configFile: logging.properties
   maxHeap: 256m
-  javaOpts: "-Dcoherence.management.http=none -Dcoherence.metrics.http.enabled=false"
   resources:
     limits:
       cpu: 2
@@ -30,6 +26,8 @@ spec:
           image: weavesocks/carts:1.0.0
           imagePullPolicy: Always
       ports:
+        - name: metrics
+          port: 7001
         - name: http
           port: 7001
           service:
@@ -41,6 +39,8 @@ spec:
           image: weavesocks/catalogue:1.0.0
           imagePullPolicy: Always
       ports:
+        - name: metrics
+          port: 7001
         - name: http
           port: 7001
           service:
@@ -52,6 +52,8 @@ spec:
           image: weavesocks/payment:2.0.0
           imagePullPolicy: Always
       ports:
+        - name: metrics
+          port: 7001
         - name: grpc
           port: 1408
           service:
@@ -62,6 +64,8 @@ spec:
           image: weavesocks/shipping:2.0.0
           imagePullPolicy: Always
       ports:
+        - name: metrics
+          port: 7001
         - name: grpc
           port: 1408
           service:
@@ -72,6 +76,8 @@ spec:
           image: weavesocks/orders:2.0.0
           imagePullPolicy: Always
       ports:
+        - name: metrics
+          port: 7001
         - name: http
           port: 7001
           service:
@@ -83,6 +89,8 @@ spec:
           image: weavesocks/user:1.0.0
           imagePullPolicy: Always
       ports:
+        - name: metrics
+          port: 7001
         - name: http
           port: 7001
           service:
