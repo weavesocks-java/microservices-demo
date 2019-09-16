@@ -15,6 +15,10 @@ spec:
     periodSeconds: 10
   logging:
     configFile: logging.properties
+    fluentdEnabled: true
+  ports:
+    - name: metrics
+      port: 7001
   maxHeap: 256m
   resources:
     limits:
@@ -26,8 +30,6 @@ spec:
           image: weavesocks/carts:1.0.0
           imagePullPolicy: Always
       ports:
-        - name: metrics
-          port: 7001
         - name: http
           port: 7001
           service:
@@ -39,8 +41,6 @@ spec:
           image: weavesocks/catalogue:1.0.0
           imagePullPolicy: Always
       ports:
-        - name: metrics
-          port: 7001
         - name: http
           port: 7001
           service:
@@ -52,8 +52,6 @@ spec:
           image: weavesocks/payment:2.0.0
           imagePullPolicy: Always
       ports:
-        - name: metrics
-          port: 7001
         - name: grpc
           port: 1408
           service:
@@ -64,8 +62,6 @@ spec:
           image: weavesocks/shipping:2.0.0
           imagePullPolicy: Always
       ports:
-        - name: metrics
-          port: 7001
         - name: grpc
           port: 1408
           service:
@@ -76,8 +72,6 @@ spec:
           image: weavesocks/orders:2.0.0
           imagePullPolicy: Always
       ports:
-        - name: metrics
-          port: 7001
         - name: http
           port: 7001
           service:
@@ -89,8 +83,6 @@ spec:
           image: weavesocks/user:1.0.0
           imagePullPolicy: Always
       ports:
-        - name: metrics
-          port: 7001
         - name: http
           port: 7001
           service:
