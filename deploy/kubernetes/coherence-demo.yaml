@@ -3,7 +3,7 @@ kind: CoherenceCluster
 metadata:
   name: weavesocks
 spec:
-  replicas: 3
+  replicas: 1
   imagePullSecrets:
     - coherence-k8s-operator-development-secret
     - ocr-k8s-operator-development-secret
