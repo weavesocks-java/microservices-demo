@@ -3,15 +3,18 @@ kind: CoherenceCluster
 metadata:
   name: weavesocks
 spec:
-  replicas: 1
+  replicas: 3
   imagePullSecrets:
     - coherence-k8s-operator-development-secret
     - ocr-k8s-operator-development-secret
   images:
     coherence:
       image: iad.ocir.io/odx-stateservice/test/coherence:14.1.1.0.0-b74871
+    fluentd:
+      application:
+        configFile: /conf/fluentd-cloud.conf
   readinessProbe:
-    initialDelaySeconds: 10
+    initialDelaySeconds: 5
     periodSeconds: 10
   logging:
     configFile: logging.properties
