@@ -10,15 +10,15 @@ spec:
   images:
     coherence:
       image: iad.ocir.io/odx-stateservice/test/coherence:14.1.1.0.0-b74871
-    fluentd:
-      application:
-        configFile: /conf/fluentd-cloud.conf
+#    fluentd:
+#      application:
+#        configFile: /conf/fluentd-cloud.conf
   readinessProbe:
     initialDelaySeconds: 5
     periodSeconds: 10
   logging:
     configFile: logging.properties
-    fluentdEnabled: true
+#    fluentdEnabled: true
   ports:
     - name: metrics
       port: 7001
@@ -30,9 +30,11 @@ spec:
     - role: carts
       images:
         userArtifacts:
-          image: weavesocks/carts:1.0.0
+          image: weavesocks/carts:2.0.0
           imagePullPolicy: Always
       ports:
+        - name: grpc
+          port: 1408
         - name: http
           port: 7001
           service:
@@ -52,13 +54,11 @@ spec:
     - role: payment
       images:
         userArtifacts:
-          image: weavesocks/payment:2.0.0
+          image: weavesocks/payment:3.0.0
           imagePullPolicy: Always
       ports:
         - name: grpc
           port: 1408
-          service:
-            name: payment
     - role: shipping
       images:
         userArtifacts:
@@ -67,12 +67,10 @@ spec:
       ports:
         - name: grpc
           port: 1408
-          service:
-            name: shipping
     - role: orders
       images:
         userArtifacts:
-          image: weavesocks/orders:2.0.0
+          image: weavesocks/orders:3.0.0
           imagePullPolicy: Always
       ports:
         - name: http
@@ -83,9 +81,11 @@ spec:
     - role: user
       images:
         userArtifacts:
-          image: weavesocks/user:1.0.0
+          image: weavesocks/user:2.0.0
           imagePullPolicy: Always
       ports:
+        - name: grpc
+          port: 1408
         - name: http
           port: 7001
           service:
